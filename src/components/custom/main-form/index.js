@@ -1,5 +1,5 @@
 import uniqueId from "lodash/uniqueId";
-import { TYPES_OF_INSERT, EVENT_NAMES } from "../../../const/index";
+import { TYPES_OF_INSERT, EVENT_NAMES, VIEW_NAMES } from "../../../const/index";
 import FormComponent from "../../form/index";
 import ButtonComponent from "../../button/index";
 import IconComponent from "../../icon/index";
@@ -30,12 +30,13 @@ export default class MultiSelectComponent extends FormComponent {
       },
     });
     this._options = cfg.options || [];
+    this._parentNode = cfg.parentNode || document.body;
     this.renderMultiselect();
   }
 
   renderMultiselect() {
     this.renderElements();
-    this.renderComponent(document.body, TYPES_OF_INSERT.APPEND);
+    this.renderComponent(this.parentNode, TYPES_OF_INSERT.APPEND);
     this._renderDefaultState();
     this.events();
   }
@@ -62,6 +63,10 @@ export default class MultiSelectComponent extends FormComponent {
       this._mainFieldId = uniqueId("main:selected:field");
     }
     return this._mainFieldId;
+  }
+
+  get parentNode() {
+    return this._parentNode;
   }
 
   get fieldWithSelectedItems() {
@@ -136,7 +141,7 @@ export default class MultiSelectComponent extends FormComponent {
         icon: "mdi-menu-down",
         className: "pos--fixes",
         attributes: {
-          tabIndex: 0,
+          "area-label": "Open suggest with items",
           id: this.selectIconId,
         },
         on: {
@@ -215,7 +220,7 @@ export default class MultiSelectComponent extends FormComponent {
       this._defaultView = new ResultField({
         className: "selected-item",
         id: this.defaultStateId,
-        icon: { icon: "none" },
+        icon: false,
         innerText: {},
         value: "All",
       });
@@ -257,9 +262,23 @@ export default class MultiSelectComponent extends FormComponent {
   }
 
   events() {
+    this.element.addEventListener("closeSuggest", (e) => {
+      this.closeSuggest(e.target);
+    });
+
     document.onclick = (e) => {
-      if (e.target != this.inputView && e.target != this.iconView) {
-        this.suggest.closeAllLists(e.target);
+      const allMultiselects = document.getElementsByClassName(
+        MultiSelectComponent.VIEW_CLASS_NAME
+      );
+      if (allMultiselects.length) {
+        const multiselect = e.target.closest(
+          `.${MultiSelectComponent.VIEW_CLASS_NAME}`
+        );
+        [...allMultiselects].forEach((elem) => {
+          if (elem != multiselect) {
+            elem.dispatchEvent(new Event("closeSuggest"));
+          }
+        });
       }
     };
   }
@@ -293,8 +312,16 @@ export default class MultiSelectComponent extends FormComponent {
         className: "selected-item",
         icon: {
           icon: "mdi mdi-close-outline",
+          attributes: {
+            "area-label": "Remove item from field and unselect in suggest",
+          },
           on: {
             [EVENT_NAMES.CLICK]: this.unselectItem.bind(this, e, option.id),
+            [EVENT_NAMES.KEY_DOWN]: this.keyDownEvent.bind(
+              this,
+              option.id,
+              VIEW_NAMES.ICON
+            ),
           },
         },
         innerText: {},
@@ -317,6 +344,22 @@ export default class MultiSelectComponent extends FormComponent {
     this.suggest.changeStateItem(optionId);
     if (!Object.keys(this.selectedItems).length) {
       this.clear();
+    }
+  }
+
+  keyDownEvent(optionId, viewName, e) {
+    switch (e.keyCode) {
+      case 40:
+        break;
+      case 38:
+        break;
+      case 13:
+        if (viewName == VIEW_NAMES.ICON) {
+          this.unselectItem(e, optionId);
+        }
+        break;
+      default:
+        break;
     }
   }
 }

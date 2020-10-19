@@ -29,20 +29,20 @@ export default class ResultField extends Component {
       tagName: "span",
       className: cfg.innerText.class || "",
       attributes: {
-        tabIndex: 0,
         ...(cfg.innerText.attributes || {}),
       },
       on: cfg.innerText.on || {},
     });
-    this._icon = new IconComponent({
-      icon: cfg.icon.icon || "mdi mdi-close-outline",
-      className: cfg.icon.class || "close-icon",
-      attributes: {
-        tabIndex: 0,
-        ...(cfg.icon.attributes || {}),
-      },
-      on: cfg.icon.on || {},
-    });
+    this._icon = cfg.icon
+      ? new IconComponent({
+          icon: cfg.icon.icon || "mdi mdi-close-outline",
+          className: cfg.icon.class || "close-icon",
+          attributes: {
+            ...(cfg.icon.attributes || {}),
+          },
+          on: cfg.icon.on || {},
+        })
+      : cfg.icon;
     this._value = cfg.value || "";
     this.render();
   }
@@ -65,9 +65,6 @@ export default class ResultField extends Component {
   }
 
   get childs() {
-    if (!this.iconView || !this.innerTextView) {
-      return [];
-    }
     this._childs = [this.innerTextView, this.iconView];
     return this._childs;
   }

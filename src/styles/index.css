@@ -62,3 +62,19 @@
 .pos--left {
   left: 270px;
 }
+
+.app-icon {
+  border-width: 0px !important;
+  background-color: #ffffff;
+}
+
+.app-suggest {
+  position: absolute;
+  top: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #ffffff;
+}
+.app-form {
+  padding: 15px;
+}

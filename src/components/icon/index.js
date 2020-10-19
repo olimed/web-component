@@ -14,16 +14,18 @@ export default class IconComponent extends Component {
         ? cfg.attributes.id
         : cfg.id || uniqueId("icon:view");
     super({
-      tagName: "i",
-      className: `${IconComponent.VIEW_CLASS_NAME} ${cfg.className || ""} mdi ${
-        cfg.icon || ""
-      } ${cfg.hidden ? "view-hidden" : ""}`,
+      tagName: "button",
+      className: `${IconComponent.VIEW_CLASS_NAME} ${cfg.className || ""} ${
+        cfg.hidden ? "view-hidden" : ""
+      }`,
       attributes: {
-        ...(cfg.attributes || {}),
+        type: "button",
+        ...(cfg.buttonAttributes || {}),
         id,
       },
       on: cfg.on || {},
     });
+    this._iconAttributes = cfg.attributes || {};
     this._icon = cfg.icon || "";
     this.renderIcon();
   }
@@ -31,10 +33,23 @@ export default class IconComponent extends Component {
   renderIcon() {
     this.createComponent();
     this._attachEvents();
+    this.element.append(this.iconView.element);
   }
 
-  get events() {
-    return this._events;
+  get iconAttributes() {
+    return this._iconAttributes;
+  }
+
+  get iconView() {
+    if (!this._iconView) {
+      this._iconView = new Component({
+        tagName: "i",
+        className: `mdi ${this.icon || ""}`,
+        attributes: this.iconAttributes,
+      });
+      this._iconView.createComponent();
+    }
+    return this._iconView;
   }
 
   get icon() {
@@ -47,7 +62,7 @@ export default class IconComponent extends Component {
 
   changeIcon(icon) {
     if (icon != this.icon) {
-      const classList = this.element.classList;
+      const classList = this.iconView.element.classList;
       classList.add(icon);
       classList.remove(this.icon);
       this.icon = icon;

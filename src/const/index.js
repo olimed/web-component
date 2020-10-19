@@ -23,3 +23,15 @@ export const EVENT_NAMES = {
   CLICK: "onclick",
   KEY_DOWN: "onkeydown",
 };
+
+/**
+ * View names
+ *
+ * @type {object}
+ * @constant
+ */
+export const VIEW_NAMES = {
+  ICON: "icon",
+  BUTTON: "button",
+  SUGGEST_ITEM: "suggestItem",
+};

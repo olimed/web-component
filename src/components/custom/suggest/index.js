@@ -8,6 +8,7 @@ import Component from "../../classes/index";
  * @class
  */
 export default class Suggest extends Component {
+  static VIEW_CLASS_NAME = "app-suggest";
   constructor(cfg = {}) {
     const id =
       cfg.attributes && cfg.attributes.id
@@ -15,7 +16,9 @@ export default class Suggest extends Component {
         : cfg.id || uniqueId("suggest:view");
     super({
       tagName: "div",
-      className: `${cfg.className || ""} ${cfg.hidden ? "view-hidden" : ""}`,
+      className: `${Suggest.VIEW_CLASS_NAME} ${cfg.className || ""} ${
+        cfg.hidden ? "view-hidden" : ""
+      }`,
       attributes: {
         id,
         ...(cfg.attributes || {}),
@@ -52,7 +55,7 @@ export default class Suggest extends Component {
     if (!val) return false;
     this.options.forEach((option) => {
       if (
-        val ||
+        val === true ||
         option.value.toString().toLowerCase().indexOf(val.toLowerCase()) !== -1
       ) {
         const optionView = new Component({
@@ -60,7 +63,7 @@ export default class Suggest extends Component {
             option.select ? "suggest-selected-item" : ""
           }`,
           attributes: {
-            id: option.id || uniqueId("suggest:item:id"),
+            id: uniqueId("suggest:item:id"),
             tabIndex: 0,
           },
           on: this.selectEvent

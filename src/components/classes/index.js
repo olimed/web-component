@@ -90,7 +90,7 @@ export default class Component {
     this.hidden = !!state;
     const classList = this.element.classList;
     classList[state ? "add" : "remove"]("view-hidden");
-    classList[state ? "remove" : "add"]("view-show");
+    // classList[state ? "remove" : "add"]("view-show");
   }
 
   _attachEvents() {
